@@ -2,12 +2,9 @@ from __future__ import print_function
 
 import Image, ImageFilter
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation, Flatten, Merge
-#from keras.regularizers import l2, activity_l2
+from keras.layers import Dense, Dropout, Activation
 import random
 import numpy as np
-import sys
-import cv2
 import math
 
 def weighted_choice(choices):
@@ -22,10 +19,6 @@ def weighted_choice(choices):
 
 
 def getData(img, nb_samples):
-
-	# get smallest scale data (original pixel level)
-
-	# scale is 1/log(size we are creating in y)
 
 	X = []
 	y = []
@@ -101,8 +94,6 @@ def getData(img, nb_samples):
 					hr_center.append(dr_center)
 
 		y.append(np.array(hr_center).reshape(1,-1)[0]/255.)
-
-
 
 	return np.array(X), np.array(y)
 
@@ -194,11 +185,10 @@ def newImage(model, seed = [], start=(2,2), iters=6):
 
 if __name__ == "__main__":
 
-	#I = Image.open('imgs/starry.png').resize((256,256), Image.ANTIALIAS).convert('RGB')#.filter(ImageFilter.BLUR) #.resize((256,256))
-	I = Image.open('imgs/rain_princess.jpg').resize((256,256), Image.ANTIALIAS)
+	I = Image.open('imgs/starry.png').resize((256,256), Image.ANTIALIAS).convert('RGB')#.filter(ImageFilter.BLUR) #.resize((256,256))
+	#I = Image.open('imgs/rain_princess.jpg').resize((256,256), Image.ANTIALIAS)
 	X, y = getData(I, 6000)
 
-	
 	
 	model = Sequential()
 	model.add(Dense(25, activation='sigmoid', input_shape=(3*8+1,)))
@@ -208,11 +198,12 @@ if __name__ == "__main__":
 	model.add(Dense(3*4, activation='sigmoid'))
 	model.compile(optimizer='adam', loss='mse')
 
-	model.fit(X, y, batch_size=6000, nb_epoch=30000) #0.0192
+	model.fit(X, y, batch_size=6000, nb_epoch=5000) #0.0192
 	IMGS = newImage(model, seed=I, start=(8,8), iters=5)
 	IMGS[-1].show()
 	
 
+	# some test images to play with
 	i2 = Image.open('imgs/i2.png').convert('RGB')
 	d21 = Image.open('imgs/d21.png').convert('RGB')
 	SF = Image.open('imgs/sanfrancisco.jpg')
